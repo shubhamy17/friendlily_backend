@@ -22,7 +22,7 @@ mongoose.connect(constants.mongo_url,{
 app.use(express.json());
 
 app.post("/register",async (req,res)=>{
-
+    
     let user = await User.findOne({ email: req.body.email });
     if (user) {
         return res.status(400).send('That user already exisits!');
@@ -40,8 +40,13 @@ app.post("/register",async (req,res)=>{
     }
 })
 app.post("/login",async(req,res)=>{
-
-    let user = await User.findOne({ email: req.body.email});
+    let user;
+    if(req.body.email){
+        user = await User.findOne({ email: req.body.email});
+    }
+    else{
+        user = await User.findOne({ username: req.body.username});
+    }
     console.log("user",user,req.body.email)
     if(!user){
         return res.status(400).send('That  user not exisits!');
