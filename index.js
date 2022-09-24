@@ -40,7 +40,9 @@ app.post("/register",async (req,res)=>{
     }
 })
 app.post("/login",async(req,res)=>{
-    let user = await User.findOne({ email: req.body.email });
+
+    let user = await User.findOne({ email: req.body.email});
+    console.log("user",user,req.body.email)
     if(!user){
         return res.status(400).send('That  user not exisits!');
     }else {
