@@ -1,9 +1,11 @@
 const express =require("express");
 const constants =require("./private_constants");
 const mongoose= require ("mongoose")
+var md5 = require('md5');
 const app=express();
-const model =require("./Schema/user")
+const User =require("./Schema/user")
 // const User = mongoose.model("User");
+
 mongoose.connect(constants.mongo_url,{
     useNewUrlParser:true,
     useUnifiedTopology:true,
@@ -14,8 +16,27 @@ mongoose.connect(constants.mongo_url,{
     mongoose.connection.on("error",(err)=>{
         console.log("connecteding error",err)
     })
-// console.log(model.User)
+
 app.use(express.json());
+
+app.post("/register",async (req,res)=>{
+
+    let user = await User.findOne({ email: req.body.email });
+    if (user) {
+        return res.status(400).send('That user already exisits!');
+    } else {
+        const hashpassword =await md5(req.body.password,12)
+        user = new User({
+            username:req.body.username,
+            email: req.body.email,
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
+            password:hashpassword
+        });
+        await user.save();
+        res.send(user);
+    }
+})
 
 app.get('/', (req, res) => {
     res.send({
