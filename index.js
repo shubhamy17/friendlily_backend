@@ -4,6 +4,8 @@ const mongoose= require ("mongoose")
 var md5 = require('md5');
 const app=express();
 const User =require("./Schema/user")
+const jwt =require("jsonwebtoken");
+
 // const User = mongoose.model("User");
 
 mongoose.connect(constants.mongo_url,{
@@ -36,6 +38,21 @@ app.post("/register",async (req,res)=>{
         await user.save();
         res.send(user);
     }
+})
+app.post("/login",async(req,res)=>{
+    let user = await User.findOne({ email: req.body.email });
+    if(!user){
+        return res.status(400).send('That  user not exisits!');
+    }else {
+        let matchpassowrd=await md5(req.body.password,user.password)
+        if(!matchpassowrd){
+            return res.status(400).send("email and password invalid");
+        }
+        const token =jwt.sign({userId:user._id},constants.JWT_SECRET)
+        res.send({authentication:token,first_name:user.first_name,last_name:user.last_name});
+        return {token}
+    }
+
 })
 
 app.get('/', (req, res) => {
