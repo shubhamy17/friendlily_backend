@@ -27,4 +27,4 @@ function cleanUpAndValidate({ username, email, phoneNumber, password }) {
       return resolve();
     });
   }
-  module.exports =cleanUpAndValidate
+  module.exports = {cleanUpAndValidate};

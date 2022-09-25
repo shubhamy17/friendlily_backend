@@ -1,5 +1,6 @@
 var md5 = require("md5");
 const User = require("../Schema/user");
+const validator = require("validator");
 function registerUser({
     username,
     email,
@@ -49,4 +50,32 @@ function registerUser({
       }
     });
   }
-  module.exports = {registerUser,verifyUsernameAndEmailExists};
+
+function loginUser({loginId,password}){
+    console.log(loginId)
+    return new Promise(async(resolve,reject)=>{
+       let dbUser={};
+       if(validator.isEmail(loginId)){
+        dbUser= await User.findOne({email:loginId})
+       }else {
+        dbUser =await User.findOne({username:loginId})
+       }
+       console.log("dbUser",dbUser)
+       if(!dbUser) {
+        return reject("No user found");
+        }
+       if(dbUser.password!==md5(password)){
+        return reject("Invalid userName or email And password")
+       }
+       resolve(dbUser)
+
+    })
+
+}
+
+
+
+
+
+
+  module.exports = {registerUser,verifyUsernameAndEmailExists,loginUser};

@@ -2,7 +2,7 @@ const express = require("express");
 const AuthRouter = express.Router();
 const validator = require("validator");
 const constants = require("../private_constants");
-const auth =require("../models/auth")
+const auth = require("../models/auth");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 dotenv.config();
@@ -27,16 +27,18 @@ function cleanUpAndValidate({ username, email, phoneNumber, password }) {
     if (password && password.length < 6) {
       return reject("Password too short");
     }
-    let strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
-    let mediumRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
+    let strongRegex = new RegExp(
+      "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
+    );
+    let mediumRegex = new RegExp(
+      "^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})"
+    );
     if (password && !strongRegex.test(password)) {
       return reject("Password should contain alphabet and numbers");
     }
     return resolve();
   });
 }
-
-
 
 AuthRouter.post("/register", async (req, res) => {
   const {
@@ -91,6 +93,25 @@ AuthRouter.post("/register", async (req, res) => {
       status: 401,
       message: error,
       error: error,
+    });
+  }
+});
+
+AuthRouter.post("/login", async (req, res) => {
+  const { loginId, password } = req.body;
+  try {
+    let dbUser = await auth.loginUser({ loginId, password });
+    const token = jwt.sign({ userId: dbUser._id }, constants.JWT_SECRET);
+    return res.send({
+      status: 200,
+      message: "Successfull Login",
+      data: { authentication: token, dbUser },
+    });
+  } catch (err) {
+    return res.send({
+      status: 401,
+      message: err,
+      error: err,
     });
   }
 });
