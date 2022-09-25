@@ -2,10 +2,9 @@ const express =require("express");
 const constants =require("./private_constants");
 const mongoose= require ("mongoose")
 var md5 = require('md5');
-const app=express();
 const User =require("./Schema/user")
 const jwt =require("jsonwebtoken");
-
+const app=express();
 // const User = mongoose.model("User");
 
 mongoose.connect(constants.mongo_url,{
@@ -20,25 +19,10 @@ mongoose.connect(constants.mongo_url,{
     })
 
 app.use(express.json());
+const AuthRouter = require('./Controller/auth');
 
-app.post("/register",async (req,res)=>{
-    
-    let user = await User.findOne({ email: req.body.email });
-    if (user) {
-        return res.status(400).send('That user already exisits!');
-    } else {
-        const hashpassword =await md5(req.body.password,12)
-        user = new User({
-            username:req.body.username,
-            email: req.body.email,
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            password:hashpassword
-        });
-        await user.save();
-        res.send(user);
-    }
-})
+app.use('/auth', AuthRouter);
+
 app.post("/login",async(req,res)=>{
     let user;
     if(req.body.email){
