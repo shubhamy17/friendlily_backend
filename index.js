@@ -1,19 +1,9 @@
 const express = require("express");
 const constants = require("./private_constants");
-const mongoose = require("mongoose");
+const db =require("./db");
 const app = express();
 
 
-mongoose.connect(constants.mongo_url, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-mongoose.connection.on("connected", () => {
-  console.log("connected to mongodb");
-});
-mongoose.connection.on("error", (err) => {
-  console.log("connecteding error", err);
-});
 app.use(express.json());
 
 const AuthRouter = require("./Controller/auth");
