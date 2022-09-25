@@ -35,7 +35,6 @@ function registerUser({
     return new Promise(async (resolve, reject) => {
       try {
         const user = await User.findOne({ $or: [{ username }, { email }] });
-  
         if (user && user.email === email) {
           return reject("Email already exists");
         }
@@ -52,7 +51,6 @@ function registerUser({
   }
 
 function loginUser({loginId,password}){
-    console.log(loginId)
     return new Promise(async(resolve,reject)=>{
        let dbUser={};
        if(validator.isEmail(loginId)){
@@ -60,7 +58,6 @@ function loginUser({loginId,password}){
        }else {
         dbUser =await User.findOne({username:loginId})
        }
-       console.log("dbUser",dbUser)
        if(!dbUser) {
         return reject("No user found");
         }
@@ -72,10 +69,5 @@ function loginUser({loginId,password}){
     })
 
 }
-
-
-
-
-
 
   module.exports = {registerUser,verifyUsernameAndEmailExists,loginUser};
