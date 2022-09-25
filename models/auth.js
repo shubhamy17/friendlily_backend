@@ -1,4 +1,4 @@
-var md5 = require("md5");
+const md5 = require("md5");
 const User = require("../Schema/user");
 const validator = require("validator");
 function registerUser({

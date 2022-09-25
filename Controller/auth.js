@@ -98,9 +98,19 @@ AuthRouter.post("/register", async (req, res) => {
 });
 
 AuthRouter.post("/login", async (req, res) => {
+  let creds = {
+    email:"",
+    username:"",
+    password:""
+  }
+  if(req.body.email){
+    creds.email = req.body.email;
+  }else{
+    creds.username = req.body.username;
+  }
   const { loginId, password } = req.body;
   try {
-    let dbUser = await auth.loginUser({ loginId, password });
+    let dbUser = await auth.loginUser({ loginId:creds.email || creds.username, password });
     const token = jwt.sign({ userId: dbUser._id }, constants.JWT_SECRET);
     return res.send({
       status: 200,

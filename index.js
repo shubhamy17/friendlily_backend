@@ -31,7 +31,6 @@ app.post("/login",async(req,res)=>{
     else{
         user = await User.findOne({ username: req.body.username});
     }
-    console.log("user",user,req.body.email)
     if(!user){
         return res.status(400).send('That  user not exisits!');
     }else {
