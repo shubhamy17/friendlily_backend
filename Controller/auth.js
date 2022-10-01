@@ -2,7 +2,8 @@ const express = require("express");
 const AuthRouter = express.Router();
 const validator = require("validator");
 const constants = require("../private_constants");
-const auth = require("../models/auth");
+const  {registerUser,verifyUsernameAndEmailExists,loginUser} = require("../models/auth");
+// const {cleanUpAndValidate}=require("../utils")
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 dotenv.config();
@@ -55,7 +56,7 @@ AuthRouter.post("/register", async (req, res) => {
     await cleanUpAndValidate({ username, email, phoneNumber, password }).then(
       async () => {
         try {
-          await auth.verifyUsernameAndEmailExists({ username, email });
+          await verifyUsernameAndEmailExists({ username, email });
         } catch (err) {
           return res.send({
             status: 401,
@@ -65,7 +66,7 @@ AuthRouter.post("/register", async (req, res) => {
         }
 
         try {
-          const dbUser = await auth.registerUser({
+          const dbUser = await registerUser({
             username,
             email,
             first_name,
@@ -110,7 +111,7 @@ AuthRouter.post("/login", async (req, res) => {
   }
   const { loginId, password } = req.body;
   try {
-    let dbUser = await auth.loginUser({ loginId:creds.email || creds.username, password });
+    let dbUser = await loginUser({ loginId:creds.email || creds.username, password });
     const token = jwt.sign({ userId: dbUser._id }, constants.JWT_SECRET);
     return res.send({
       status: 200,
